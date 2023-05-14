@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.controllers;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -24,13 +25,7 @@ public class FilmController {
 
     @PostMapping("/films")
     public Film create(@RequestBody Film film) throws ValidationException {
-        try {
-            validate(film);
-        } catch (ValidationException ex) {
-            log.info("Некорректный запрос: {}", ex.getMessage());
-            throw ex;
-        }
-
+        validate(film);
         if (films.containsKey(film.getId())) {
             log.info("Фильм с id {} уже существует", film.getId());
             return null;
@@ -44,13 +39,7 @@ public class FilmController {
 
     @PutMapping("/films")
     public Film update(@RequestBody Film film) throws ValidationException {
-        try {
-            validate(film);
-        } catch (ValidationException ex) {
-            log.info("Некорректный запрос: {}", ex.getMessage());
-            throw ex;
-        }
-
+        validate(film);
         if (!films.containsKey(film.getId())) {
             log.info("Фильма с id {} не существует", film.getId());
             throw new ValidationException("Неизвестный id");
@@ -66,7 +55,7 @@ public class FilmController {
             throw new ValidationException("Тело запроса не может быть пустым");
         }
 
-        if (film.getName() == null || film.getName().isBlank()) {
+        if (!StringUtils.hasText(film.getName())) {
             throw new ValidationException("Название фильма не может быть пустым");
         } else if (film.getDescription() != null && film.getDescription().length() > 200) {
             throw new ValidationException("Максимальная длина описания - 200 символов");

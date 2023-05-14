@@ -19,13 +19,7 @@ public class UserController {
 
     @PostMapping("/users")
     public User create(@RequestBody User user) throws ValidationException {
-        try {
-            validate(user);
-        } catch (ValidationException ex) {
-            log.info("Некорректный запрос: {}", ex.getMessage());
-            throw ex;
-        }
-
+        validate(user);
         if (users.containsKey(user.getId())) {
             log.info("Пользователь с id {} уже существует", user.getId());
             return null;
@@ -45,13 +39,7 @@ public class UserController {
 
     @PutMapping("/users")
     public User update(@RequestBody User user) throws ValidationException {
-        try {
-            validate(user);
-        } catch (ValidationException ex) {
-            log.info("Некорректный запрос: " + ex.getMessage());
-            throw ex;
-        }
-
+        validate(user);
         if (!users.containsKey(user.getId())) {
             log.info("Пользователя с id {} не существует", user.getId());
             throw new ValidationException("Неизвестный id");
