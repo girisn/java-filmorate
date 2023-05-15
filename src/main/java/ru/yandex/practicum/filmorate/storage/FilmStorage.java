@@ -13,6 +13,7 @@ public interface FilmStorage {
     List<Film> list();
 
     boolean isExist(Integer id);
+
     boolean contains(Film film);
 
     boolean hasLike(Integer filmId, Integer userId);
