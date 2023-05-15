@@ -22,8 +22,8 @@ public class FilmService {
     @Autowired
     private UserStorage userStorage;
 
-    public Film addFilm(Film film) throws ValidationException {
-        if (filmStorage.containsId(film.getId())) {
+    public Film add(Film film) throws ValidationException {
+        if (filmStorage.contains(film)) {
             log.info("Фильм с id {} уже существует", film.getId());
             return null;
         }
@@ -36,8 +36,8 @@ public class FilmService {
         return savedFilm;
     }
 
-    public Film updateFilm(Film film) throws ValidationException, ObjectNotFoundException {
-        if (!filmStorage.containsId(film.getId())) {
+    public Film update(Film film) throws ValidationException, ObjectNotFoundException {
+        if (!filmStorage.contains(film)) {
             log.info("Фильма с id {} не существует", film.getId());
             throw new ObjectNotFoundException("Неизвестный id");
         }
@@ -54,8 +54,8 @@ public class FilmService {
         return filmStorage.list();
     }
 
-    public Film getFilmById(Integer filmId) throws ObjectNotFoundException {
-        if (!filmStorage.containsId(filmId)) {
+    public Film getById(Integer filmId) throws ObjectNotFoundException {
+        if (!filmStorage.isExist(filmId)) {
             throw new ObjectNotFoundException("Неизвестный id");
         }
         return filmStorage.get(filmId);
@@ -77,14 +77,14 @@ public class FilmService {
         filmStorage.deleteLike(filmId, userId);
     }
 
-    public List<Film> getPopularFilms(Integer count) {
+    public List<Film> getPopular(Integer count) {
         return filmStorage.getPopularFilms(count);
     }
 
     private void validate(Integer filmId, Integer userId) throws ObjectNotFoundException {
-        if (!filmStorage.containsId(filmId)) {
+        if (!filmStorage.isExist(filmId)) {
             throw new ObjectNotFoundException("Фильм с идентификатором " + filmId + " не найден");
-        } else if (!userStorage.containsId(userId)) {
+        } else if (!userStorage.isExist(userId)) {
             throw new ObjectNotFoundException("Пользователь с идентификатором " + userId + " не найден");
         }
     }

@@ -19,8 +19,8 @@ public class UserService {
     @Autowired
     private UserStorage userStorage;
 
-    public User addUser(User user) throws ValidationException {
-        if (userStorage.containsId(user.getId())) {
+    public User add(User user) throws ValidationException {
+        if (userStorage.contains(user)) {
             log.info("Пользователь с id {} уже существует", user.getId());
             return null;
         }
@@ -37,8 +37,8 @@ public class UserService {
         return savedUser;
     }
 
-    public User updateUser(User user) throws ValidationException, ObjectNotFoundException {
-        if (!userStorage.containsId(user.getId())) {
+    public User update(User user) throws ValidationException, ObjectNotFoundException {
+        if (!userStorage.contains(user)) {
             log.info("Пользователя с id {} не существует", user.getId());
             throw new ObjectNotFoundException("Неизвестный id");
         }
@@ -54,8 +54,8 @@ public class UserService {
         return userStorage.list();
     }
 
-    public User getUserById(Integer id) throws ObjectNotFoundException {
-        if (!userStorage.containsId(id)) {
+    public User getById(Integer id) throws ObjectNotFoundException {
+        if (!userStorage.isExist(id)) {
             throw new ObjectNotFoundException("Пользователь с идентификатором " + id + " не найден");
         }
         return userStorage.get(id);
@@ -85,7 +85,7 @@ public class UserService {
     }
 
     public List<User> getFriendsList(Integer userId) throws ObjectNotFoundException {
-        if (!userStorage.containsId(userId)) {
+        if (!userStorage.isExist(userId)) {
             throw new ObjectNotFoundException("Пользователь с идентификатором " + userId + " не найден");
         }
         return userStorage.friendsList(userId);
@@ -100,9 +100,9 @@ public class UserService {
     }
 
     private void validate(Integer userId, Integer friendId) throws ObjectNotFoundException {
-        if (!userStorage.containsId(userId)) {
+        if (!userStorage.isExist(userId)) {
             throw new ObjectNotFoundException("Пользователь с идентификатором " + userId + " не найден");
-        } else if (!userStorage.containsId(friendId)) {
+        } else if (!userStorage.isExist(friendId)) {
             throw new ObjectNotFoundException("Пользователь с идентификатором " + friendId + " не найден");
         }
     }

@@ -17,12 +17,12 @@ public class UserController {
 
     @PostMapping("/users")
     public User create(@RequestBody User user) throws ValidationException {
-        return userService.addUser(user);
+        return userService.add(user);
     }
 
     @PutMapping("/users")
     public User update(@RequestBody User user) throws ObjectNotFoundException, ValidationException {
-        return userService.updateUser(user);
+        return userService.update(user);
     }
 
     @GetMapping("/users")
@@ -32,7 +32,7 @@ public class UserController {
 
     @GetMapping("/users/{id}")
     public User getById(@PathVariable("id") Integer id) throws ObjectNotFoundException {
-        return userService.getUserById(id);
+        return userService.getById(id);
     }
 
     @PutMapping("users/{id}/friends/{friendId}")

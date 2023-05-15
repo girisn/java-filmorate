@@ -34,7 +34,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public boolean containsId(Integer id) {
+    public boolean isExist(Integer id) {
         return users.containsKey(id);
     }
 
@@ -81,5 +81,10 @@ public class InMemoryUserStorage implements UserStorage {
                 .filter(otherUserFriendsList::contains)
                 .map(users::get)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean contains(User user) {
+        return users.containsKey(user.getId());
     }
 }

@@ -21,17 +21,17 @@ public class FilmController {
 
     @PostMapping("/films")
     public Film create(@RequestBody Film film) throws ValidationException {
-        return filmService.addFilm(film);
+        return filmService.add(film);
     }
 
     @PutMapping("/films")
     public Film update(@RequestBody Film film) throws ValidationException, ObjectNotFoundException {
-        return filmService.updateFilm(film);
+        return filmService.update(film);
     }
 
     @GetMapping("/films/{id}")
     public Film getById(@PathVariable("id") Integer filmId) throws ObjectNotFoundException {
-        return filmService.getFilmById(filmId);
+        return filmService.getById(filmId);
     }
 
     @PutMapping("/films/{id}/like/{userId}")
@@ -47,10 +47,8 @@ public class FilmController {
     }
 
     @GetMapping("/films/popular")
-    public List<Film> getPopularFilms(@RequestParam(value = "count", required = false) Integer count) {
-        if (count == null) {
-            count = 10;
-        }
-        return filmService.getPopularFilms(count);
+    public List<Film> getPopularFilms(
+            @RequestParam(value = "count", required = false, defaultValue = "10") Integer count) {
+        return filmService.getPopular(count);
     }
 }

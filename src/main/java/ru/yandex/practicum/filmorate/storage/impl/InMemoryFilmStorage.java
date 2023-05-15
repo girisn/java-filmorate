@@ -34,7 +34,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public boolean containsId(Integer id) {
+    public boolean isExist(Integer id) {
         return films.containsKey(id);
     }
 
@@ -69,6 +69,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public Film get(Integer filmId) {
         return films.get(filmId);
+    }
+
+    @Override
+    public boolean contains(Film film) {
+        return films.containsKey(film.getId());
     }
 
 }
