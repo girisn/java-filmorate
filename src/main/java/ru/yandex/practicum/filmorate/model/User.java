@@ -3,8 +3,7 @@ package ru.yandex.practicum.filmorate.model;
 import lombok.Data;
 
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 @Data
 public class User {
@@ -13,5 +12,20 @@ public class User {
     private String login;
     private String name;
     private LocalDate birthday;
-    private Set<Integer> friends = new HashSet<>();
+    private Map<Integer, Boolean> friends = new HashMap<>();
+
+    public void addFriend(User user) {
+        if (this.friends.containsKey(user.id)) {
+            return;
+        }
+
+        if (user.friends.containsKey(this.id)) {
+            this.friends.put(user.id, true);
+            user.friends.put(this.id, true);
+        } else {
+            this.friends.put(user.id, false);
+        }
+    }
+
+
 }
