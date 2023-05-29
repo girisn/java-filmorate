@@ -2,60 +2,37 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/users")
+public class UserController extends AbstractController<User, UserService> {
 
-public class UserController {
     @Autowired
-    private UserService userService;
-
-    @PostMapping("/users")
-    public User create(@RequestBody User user) throws ValidationException {
-        return userService.add(user);
+    public UserController(UserService service) {
+        super(service);
     }
 
-    @PutMapping("/users")
-    public User update(@RequestBody User user) throws ObjectNotFoundException, ValidationException {
-        return userService.update(user);
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addFriend(@PathVariable("id") Long id1, @PathVariable("friendId") Long id2) {
+        service.addFriend(id1, id2);
     }
 
-    @GetMapping("/users")
-    public List<User> getList() {
-        return userService.list();
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void removeFriend(@PathVariable("id") Long id1, @PathVariable("friendId") Long id2) {
+        service.removeFriend(id1, id2);
     }
 
-    @GetMapping("/users/{id}")
-    public User getById(@PathVariable("id") Integer id) throws ObjectNotFoundException {
-        return userService.getById(id);
+    @GetMapping("/{id}/friends")
+    public List<User> getFriends(@PathVariable  Long id) {
+        return service.getFriends(id);
     }
 
-    @PutMapping("users/{id}/friends/{friendId}")
-    public void addFriend(@PathVariable("id") Integer userId,
-                          @PathVariable("friendId") Integer friendId) throws ValidationException, ObjectNotFoundException {
-        userService.addFriend(userId, friendId);
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> getCommonFriends(@PathVariable("id") Long id1, @PathVariable("otherId") long id2) {
+        return service.getCommonFriends(id1, id2);
     }
-
-    @DeleteMapping("/users/{id}/friends/{friendId}")
-    public void deleteFriend(@PathVariable("id") Integer userId,
-                             @PathVariable("friendId") Integer friendId) throws ValidationException, ObjectNotFoundException {
-        userService.deleteFriend(userId, friendId);
-    }
-
-    @GetMapping("/users/{id}/friends")
-    public List<User> getFriendsList(@PathVariable("id") Integer userId) throws ObjectNotFoundException {
-        return userService.getFriendsList(userId);
-    }
-
-    @GetMapping("/users/{id}/friends/common/{otherId}")
-    public List<User> getCommonFriendsList(@PathVariable("id") Integer userId,
-                                           @PathVariable("otherId") Integer otherUserId) throws ValidationException, ObjectNotFoundException {
-        return userService.getCommonFriendsList(userId, otherUserId);
-    }
-
 }

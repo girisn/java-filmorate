@@ -1,26 +1,29 @@
 package ru.yandex.practicum.filmorate.model;
 
-public enum Genre {
-    DRAMA(1, "Драма"),
-    COMEDY(2, "Комедия"),
-    CARTOON(3, "Мультфильм"),
-    DOCUMENTARY(4, "Документальный фильм"),
-    THRILLER(5, "Триллер"),
-    ACTION_MOVIE(6, "Боевик");
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-    private final String name;
-    private final Integer id;
+import javax.validation.constraints.Size;
 
-    private Genre(Integer id, String name) {
+@Getter
+@Setter
+@ToString
+public class Genre extends AbstractEntity {
+    @Size(max = 30)
+    private String name;
+
+    public Genre(Long id, String name) {
+        super(id);
         this.name = name;
-        this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public Genre(Long id) {
+        super(id);
+        this.name = "";
     }
 
-    public Integer getId() {
-        return id;
+    public Genre() {
+        this.name = "";
     }
 }

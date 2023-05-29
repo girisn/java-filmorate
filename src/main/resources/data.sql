@@ -1,16 +1,12 @@
-INSERT INTO genres (name)
-VALUES ('Драма'),
-    ('Комедия'),
-    ('Мультфильм'),
-    ('Документальный фильм'),
-    ('Триллер'),
-    ('Боевик')
-ON CONFLICT DO NOTHING;
+INSERT INTO genres (name) VALUES('Комедия');
+INSERT INTO genres (name) VALUES('Драма');
+INSERT INTO genres (name) VALUES('Мультфильм');
+INSERT INTO genres (name) VALUES('Триллер');
+INSERT INTO genres (name) VALUES('Документальный');
+INSERT INTO genres (name) VALUES('Боевик');
 
-INSERT INTO ratings (name)
-VALUES ('G'),
-    ('PG'),
-    ('PG-13'),
-    ('R'),
-    ('NC-17')
-ON CONFLICT DO NOTHING;
+INSERT INTO ratings (name) VALUES('G');
+INSERT INTO ratings (name) VALUES('PG');
+INSERT INTO ratings (name) VALUES('PG-13');
+INSERT INTO ratings (name) VALUES('R');
+INSERT INTO ratings (name) VALUES('NC-17');

@@ -1,19 +1,29 @@
 package ru.yandex.practicum.filmorate.model;
 
-public enum Rating {
-    G("G"),
-    PG("PG"),
-    PG_13("PG-13"),
-    R("R"),
-    NC_17("NC-17");
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-    private final String name;
+import javax.validation.constraints.Size;
 
-    Rating(String name) {
+@Getter
+@Setter
+@ToString
+public class Rating extends AbstractEntity {
+    @Size(max = 10)
+    private String name;
+
+    public Rating(Long id, String name) {
+        super(id);
         this.name = name;
     }
 
-    public String getName() {
-        return name;
+    public Rating(Long id) {
+        super(id);
+        this.name = "";
+    }
+
+    public Rating() {
+        this.name = "";
     }
 }

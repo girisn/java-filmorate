@@ -1,38 +1,49 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
+import lombok.*;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Past;
+import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
-@Data
-public class User {
-    private Integer id;
+@Getter
+@Setter
+@RequiredArgsConstructor
+@ToString
+public class User extends AbstractEntity {
+    @NotBlank
+    @Email
     private String email;
+    @NotBlank
+    @Pattern(regexp="\\S+")
     private String login;
     private String name;
+    @Past
     private LocalDate birthday;
-    private Map<Integer, Boolean> friends = new HashMap<>();
+    @Getter(AccessLevel.NONE)
+    @Setter(AccessLevel.NONE)
+    private Set<Long> friends = new HashSet<>();
 
-    public void addFriend(User user) {
-        if (this.friends.containsKey(user.id)) {
-            return;
-        }
-
-        if (user.friends.containsKey(this.id)) {
-            this.friends.put(user.id, true);
-            user.friends.put(this.id, true);
-        } else {
-            this.friends.put(user.id, false);
-        }
+    public void addFriend(Long id) {
+        friends.add(id);
     }
 
-    public User(Integer id, String email, String login, String name, LocalDate birthday) {
-        this.id = id;
-        this.email = email;
-        this.login = login;
-        this.name = name;
-        this.birthday = birthday;
+    public void removeFriend(Long id) {
+        friends.remove(id);
+    }
+
+    public List<Long> getFiends() {
+        return new ArrayList<>(friends);
+    }
+
+    public boolean containsFriend(Long id){
+        return friends.contains(id);
     }
 
 }
