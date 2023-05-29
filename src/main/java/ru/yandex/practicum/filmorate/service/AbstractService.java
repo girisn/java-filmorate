@@ -40,7 +40,7 @@ public abstract class AbstractService<E extends AbstractEntity, T extends Common
     }
 
     @Override
-    abstract public void validationBeforeCreate(E data);
+    public abstract void validationBeforeCreate(E data);
 
     @Override
     public void validationBeforeUpdate(E data) {
