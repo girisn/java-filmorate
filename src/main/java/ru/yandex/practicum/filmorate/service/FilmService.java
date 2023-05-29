@@ -2,24 +2,29 @@ package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
 public class FilmService {
     @Autowired
+    @Qualifier("filmDb")
     private FilmStorage filmStorage;
 
     @Autowired
+    @Qualifier("userDb")
     private UserStorage userStorage;
 
     public Film add(Film film) throws ValidationException {
@@ -58,7 +63,7 @@ public class FilmService {
         if (!filmStorage.isExist(filmId)) {
             throw new ObjectNotFoundException("Неизвестный id");
         }
-        return filmStorage.get(filmId);
+        return filmStorage.getById(filmId);
     }
 
     public void addLike(Integer filmId, Integer userId) throws ObjectNotFoundException, ValidationException {
@@ -82,9 +87,10 @@ public class FilmService {
     }
 
     private void validate(Integer filmId, Integer userId) throws ObjectNotFoundException {
+        Optional<User> user = userStorage.getById(userId);
         if (!filmStorage.isExist(filmId)) {
             throw new ObjectNotFoundException("Фильм с идентификатором " + filmId + " не найден");
-        } else if (!userStorage.isExist(userId)) {
+        } else if (user.isEmpty()) {
             throw new ObjectNotFoundException("Пользователь с идентификатором " + userId + " не найден");
         }
     }

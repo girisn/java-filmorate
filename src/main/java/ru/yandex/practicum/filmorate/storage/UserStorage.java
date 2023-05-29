@@ -4,21 +4,18 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface UserStorage {
-    User add(User user) throws ValidationException;
+    User add(User user);
 
-    User update(User user) throws ValidationException;
+    User update(User user);
 
     List<User> list();
 
-    boolean isExist(Integer id);
+    Optional<User> getById(Integer id);
 
-    boolean contains(User user);
-
-    User get(Integer id);
-
-    boolean userHasFriend(Integer userId, Integer friendId);
+    Optional<User> getFriendById(Integer userId, Integer friendId);
 
     void addFriend(Integer userId, Integer friendId);
 

@@ -14,7 +14,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     private Integer id = 1;
 
     @Override
-    public Film add(Film film) throws ValidationException {
+    public Film add(Film film) {
         film.setId(id);
         films.put(film.getId(), film);
         id++;
@@ -23,7 +23,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film update(Film film) throws ValidationException {
+    public Film update(Film film) {
         films.put(film.getId(), film);
         return film;
     }
@@ -67,7 +67,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public Film get(Integer filmId) {
+    public Film getById(Integer filmId) {
         return films.get(filmId);
     }
 

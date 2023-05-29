@@ -14,7 +14,7 @@ public class InMemoryUserStorage implements UserStorage {
     private Integer id = 1;
 
     @Override
-    public User add(User user) throws ValidationException {
+    public User add(User user) {
         user.setId(id);
         users.put(id, user);
         id++;
@@ -23,7 +23,7 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public User update(User user) throws ValidationException {
+    public User update(User user) {
         users.put(user.getId(), user);
         return user;
     }
@@ -33,27 +33,26 @@ public class InMemoryUserStorage implements UserStorage {
         return new ArrayList<>(users.values());
     }
 
-    @Override
+
     public boolean isExist(Integer id) {
         return users.containsKey(id);
     }
 
     @Override
-    public User get(Integer id) {
-        return users.get(id);
+    public Optional<User> getById(Integer id) {
+        return Optional.of(users.get(id));
     }
 
     @Override
-    public boolean userHasFriend(Integer userId, Integer friendId) {
-        return users.get(userId).getFriends().contains(friendId);
+    public Optional<User> getFriendById(Integer userId, Integer friendId) {
+        return null;
     }
 
     @Override
     public void addFriend(Integer userId, Integer friendId) {
         User user = users.get(userId);
-        user.getFriends().add(friendId);
         User friend = users.get(friendId);
-        friend.getFriends().add(userId);
+        user.addFriend(friend);
     }
 
     @Override
@@ -66,7 +65,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public List<User> friendsList(Integer userId) {
-        Set<Integer> friendIds = users.get(userId).getFriends();
+        Set<Integer> friendIds = users.get(userId).getFriends().keySet();
         return friendIds.stream()
                 .map(users::get)
                 .collect(Collectors.toList());
@@ -74,8 +73,8 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public List<User> commonFriendsList(Integer userId, Integer otherUserId) {
-        Set<Integer> userFriendsList = users.get(userId).getFriends();
-        Set<Integer> otherUserFriendsList = users.get(otherUserId).getFriends();
+        Set<Integer> userFriendsList = users.get(userId).getFriends().keySet();
+        Set<Integer> otherUserFriendsList = users.get(otherUserId).getFriends().keySet();
 
         return userFriendsList.stream()
                 .filter(otherUserFriendsList::contains)
@@ -83,7 +82,7 @@ public class InMemoryUserStorage implements UserStorage {
                 .collect(Collectors.toList());
     }
 
-    @Override
+
     public boolean contains(User user) {
         return users.containsKey(user.getId());
     }

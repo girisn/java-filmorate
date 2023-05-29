@@ -1,14 +1,13 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
 
 public interface FilmStorage {
-    Film add(Film film) throws ValidationException;
+    Film add(Film film);
 
-    Film update(Film film) throws ValidationException;
+    Film update(Film film);
 
     List<Film> list();
 
@@ -24,5 +23,5 @@ public interface FilmStorage {
 
     List<Film> getPopularFilms(Integer count);
 
-    Film get(Integer filmId);
+    Film getById(Integer filmId);
 }
