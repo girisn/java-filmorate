@@ -20,7 +20,7 @@ public class RatingDbStorage implements RatingStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Autowired
-    public  RatingDbStorage(JdbcTemplate jdbcTemplate) {
+    public RatingDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
 

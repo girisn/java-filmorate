@@ -105,7 +105,7 @@ public class UserDbStorage implements UserStorage {
     }
 
     @Override
-    public void updateFriendship(Long id1, Long id2, boolean confirmed,  Long filterId1, Long filterId2) {
+    public void updateFriendship(Long id1, Long id2, boolean confirmed, Long filterId1, Long filterId2) {
         String sql =
                 "UPDATE FRIENDSHIP SET USER_ID1 = ?, USER_ID2 = ?, CONFIRMED = ? " +
                         "WHERE USER_ID1 = ? AND USER_ID2 = ?";

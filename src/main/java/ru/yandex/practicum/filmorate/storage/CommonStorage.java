@@ -4,7 +4,7 @@ import ru.yandex.practicum.filmorate.model.AbstractEntity;
 
 import java.util.List;
 
-public interface CommonStorage <E extends AbstractEntity> {
+public interface CommonStorage<E extends AbstractEntity> {
     E findById(Long id);
 
     List<E> findAll();

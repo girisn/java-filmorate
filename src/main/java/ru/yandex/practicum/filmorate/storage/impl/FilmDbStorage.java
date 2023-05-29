@@ -99,7 +99,7 @@ public class FilmDbStorage implements FilmStorage {
 
         String sql = "INSERT INTO FILMS_LIKES (FILM_ID, USER_ID) VALUES(?, ?)";
         Set<Long> likes = film.getLikes();
-        for (var like : likes ) {
+        for (var like : likes) {
             jdbcTemplate.update(sql, film.getId(), like);
         }
     }
@@ -121,12 +121,13 @@ public class FilmDbStorage implements FilmStorage {
         if (genres == null) {
             return;
         }
-        for (var genre : genres ) {
+        for (var genre : genres) {
             jdbcTemplate.update(sql, film.getId(), genre.getId());
         }
     }
 
-    @Override public void updateGenresByFilm(Film film) {
+    @Override
+    public void updateGenresByFilm(Film film) {
         String sql = "DELETE FROM FILMS_GENRES WHERE FILM_ID = ?";
         jdbcTemplate.update(sql, film.getId());
         createGenresByFilm(film);

@@ -27,7 +27,7 @@ public class UserController extends AbstractController<User, UserService> {
     }
 
     @GetMapping("/{id}/friends")
-    public List<User> getFriends(@PathVariable  Long id) {
+    public List<User> getFriends(@PathVariable Long id) {
         return service.getFriends(id);
     }
 

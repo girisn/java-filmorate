@@ -21,7 +21,7 @@ public class User extends AbstractEntity {
     @Email
     private String email;
     @NotBlank
-    @Pattern(regexp="\\S+")
+    @Pattern(regexp = "\\S+")
     private String login;
     private String name;
     @Past
@@ -42,7 +42,7 @@ public class User extends AbstractEntity {
         return new ArrayList<>(friends);
     }
 
-    public boolean containsFriend(Long id){
+    public boolean containsFriend(Long id) {
         return friends.contains(id);
     }
 

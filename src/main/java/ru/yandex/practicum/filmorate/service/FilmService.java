@@ -127,7 +127,7 @@ public class FilmService extends AbstractService<Film, FilmStorage> {
     public List<Film> findPopularMovies(int count) {
         List<Film> films = this.findAll();
         films.sort(Comparator.comparing(Film::getLikesCount).reversed());
-        if(count > films.size()) {
+        if (count > films.size()) {
             count = films.size();
         }
 

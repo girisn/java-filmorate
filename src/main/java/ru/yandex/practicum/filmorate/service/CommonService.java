@@ -4,7 +4,7 @@ import ru.yandex.practicum.filmorate.model.AbstractEntity;
 
 import java.util.List;
 
-public interface CommonService <E extends AbstractEntity>{
+public interface CommonService<E extends AbstractEntity> {
     List<E> findAll();
 
     E create(E data);

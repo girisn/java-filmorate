@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.service.CommonService;
 import javax.validation.Valid;
 import java.util.List;
 
-public abstract class AbstractController <E extends AbstractEntity, S extends CommonService<E>> {
+public abstract class AbstractController<E extends AbstractEntity, S extends CommonService<E>> {
     protected final S service;
 
     @Autowired

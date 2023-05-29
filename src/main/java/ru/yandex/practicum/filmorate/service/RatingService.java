@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.model.Rating;
 import ru.yandex.practicum.filmorate.storage.RatingStorage;
 
 @Service
-public class RatingService  extends AbstractService<Rating, RatingStorage>{
+public class RatingService extends AbstractService<Rating, RatingStorage> {
 
     @Autowired
     public RatingService(RatingStorage storage) {
