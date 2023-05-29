@@ -19,8 +19,8 @@ import java.util.List;
 @Service
 @Slf4j
 public class FilmService extends AbstractService<Film, FilmStorage> {
-    private final static String MSG_ERR_DATE = "Дата релиза не раньше 28 декабря 1895 года ";
-    private final static String MSG_ERR_MPA = "Не заполнен рейтинг MPA";
+    private static final String MSG_ERR_DATE = "Дата релиза не раньше 28 декабря 1895 года ";
+    private static final String MSG_ERR_MPA = "Не заполнен рейтинг MPA";
 
     private final LocalDate MIN_DATE = LocalDate.of(1895, 12, 28);
     private final UserService userService;
