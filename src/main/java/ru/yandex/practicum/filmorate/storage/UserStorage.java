@@ -1,30 +1,17 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.List;
+public interface UserStorage extends CommonStorage<User> {
+    boolean containsEmail(String email);
 
-public interface UserStorage {
-    User add(User user) throws ValidationException;
+    void loadFriends(User user);
 
-    User update(User user) throws ValidationException;
+    boolean containsFriendship(Long filterId1, Long filterId2, Boolean filterConfirmed);
 
-    List<User> list();
+    void updateFriendship(Long id1, Long id2, boolean confirmed, Long filterId1, Long filterId2);
 
-    boolean isExist(Integer id);
+    void insertFriendship(Long id, Long friendId);
 
-    boolean contains(User user);
-
-    User get(Integer id);
-
-    boolean userHasFriend(Integer userId, Integer friendId);
-
-    void addFriend(Integer userId, Integer friendId);
-
-    void deleteFriend(Integer userId, Integer friendId);
-
-    List<User> friendsList(Integer userId);
-
-    List<User> commonFriendsList(Integer userId, Integer otherUserId);
+    void removeFriendship(Long filterId1, Long filterId2);
 }

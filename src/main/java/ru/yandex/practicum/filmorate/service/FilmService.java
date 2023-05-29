@@ -3,105 +3,134 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
+import ru.yandex.practicum.filmorate.exception.InvalidFilmException;
+import ru.yandex.practicum.filmorate.exception.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Rating;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
 @Slf4j
-public class FilmService {
-    @Autowired
-    private FilmStorage filmStorage;
+public class FilmService extends AbstractService<Film, FilmStorage> {
+    private final static String MSG_ERR_DATE = "Дата релиза не раньше 28 декабря 1895 года ";
+    private final static String MSG_ERR_MPA = "Не заполнен рейтинг MPA";
+
+    private final LocalDate MIN_DATE = LocalDate.of(1895, 12, 28);
+    private final UserService userService;
+    private final GenreStorage genreStorage;
 
     @Autowired
-    private UserStorage userStorage;
-
-    public Film add(Film film) throws ValidationException {
-        if (filmStorage.contains(film)) {
-            log.info("Фильм с id {} уже существует", film.getId());
-            return null;
-        }
-
-        validate(film);
-
-        Film savedFilm = filmStorage.add(film);
-        log.info("Создан объект: {}", film);
-
-        return savedFilm;
+    public FilmService(FilmStorage storage, UserService userService, GenreStorage genreStorage) {
+        super(storage);
+        this.userService = userService;
+        this.genreStorage = genreStorage;
     }
 
-    public Film update(Film film) throws ValidationException, ObjectNotFoundException {
-        if (!filmStorage.contains(film)) {
-            log.info("Фильма с id {} не существует", film.getId());
-            throw new ObjectNotFoundException("Неизвестный id");
-        }
-
-        validate(film);
-
-        Film savedFilm = filmStorage.update(film);
-        log.info("Обновлен объект: {}", film);
-
-        return savedFilm;
+    @Override
+    public Film create(Film film) {
+        film = super.create(film);
+        storage.createGenresByFilm(film);
+        log.info("Добавлен фильма {}", film);
+        return film;
     }
 
-    public List<Film> list() {
-        return filmStorage.list();
+    @Override
+    public Film update(Film film) {
+        film = super.update(film);
+        storage.updateGenresByFilm(film);
+        log.info("Обновлён фильм {}", film);
+        return film;
     }
 
-    public Film getById(Integer filmId) throws ObjectNotFoundException {
-        if (!filmStorage.isExist(filmId)) {
-            throw new ObjectNotFoundException("Неизвестный id");
-        }
-        return filmStorage.get(filmId);
+    @Override
+    public List<Film> findAll() {
+        List<Film> films = super.findAll();
+        films.forEach(this::loadData);
+        return films;
     }
 
-    public void addLike(Integer filmId, Integer userId) throws ObjectNotFoundException, ValidationException {
-        validate(filmId, userId);
-        if (filmStorage.hasLike(filmId, userId)) {
-            throw new ValidationException("Лайк от пользователя уже существует");
-        }
-        filmStorage.addLike(filmId, userId);
+    @Override
+    public Film findById(Long id) {
+        Film film = super.findById(id);
+        loadData(film);
+        return film;
     }
 
-    public void deleteLike(Integer filmId, Integer userId) throws ObjectNotFoundException, ValidationException {
-        validate(filmId, userId);
-        if (!filmStorage.hasLike(filmId, userId)) {
-            throw new ValidationException("Лайка от этого пользователя нет");
-        }
-        filmStorage.deleteLike(filmId, userId);
+    private void loadData(Film film) {
+        film.setGenres(genreStorage.getGenresByFilm(film));
+        storage.loadLikes(film);
     }
 
-    public List<Film> getPopular(Integer count) {
-        return filmStorage.getPopularFilms(count);
+    @Override
+    public void validationBeforeCreate(Film film) {
+        validateReleaseDate(film.getReleaseDate());
+        validateMpa(film.getMpa());
     }
 
-    private void validate(Integer filmId, Integer userId) throws ObjectNotFoundException {
-        if (!filmStorage.isExist(filmId)) {
-            throw new ObjectNotFoundException("Фильм с идентификатором " + filmId + " не найден");
-        } else if (!userStorage.isExist(userId)) {
-            throw new ObjectNotFoundException("Пользователь с идентификатором " + userId + " не найден");
+    @Override
+    public void validationBeforeUpdate(Film film) {
+        super.validationBeforeUpdate(film);
+        validateReleaseDate(film.getReleaseDate());
+        validateMpa(film.getMpa());
+    }
+
+    private void validateReleaseDate(LocalDate date) {
+        if (date.isBefore(MIN_DATE)) {
+            log.warn(MSG_ERR_DATE + date);
+            throw new InvalidFilmException(MSG_ERR_DATE);
         }
     }
 
-    private void validate(Film film) throws ValidationException {
+    private void validateMpa(Rating rating) {
+        if (rating == null) {
+            log.warn(MSG_ERR_MPA);
+            throw new InvalidFilmException(MSG_ERR_MPA);
+        }
+    }
+
+    private void validateLike(Film film, User user) {
         if (film == null) {
-            throw new ValidationException("Тело запроса не может быть пустым");
+            String message = ("Фильм не найден");
+            log.warn(message);
+            throw new NotFoundException(message);
+        }
+        if (user == null) {
+            String message = ("Пользователь не найден");
+            log.warn(message);
+            throw new NotFoundException(message);
+        }
+    }
+
+    public void addLike(Long id, Long userId) {
+        Film film = this.findById(id);
+        User user = userService.findById(userId);
+        validateLike(film, user);
+        film.addLike(userId);
+        storage.saveLikes(film);
+    }
+
+    public void removeLike(Long id, Long userId) {
+        Film film = this.findById(id);
+        User user = userService.findById(userId);
+        validateLike(film, user);
+        film.removeLike(userId);
+        storage.saveLikes(film);
+    }
+
+    public List<Film> findPopularMovies(int count) {
+        List<Film> films = this.findAll();
+        films.sort(Comparator.comparing(Film::getLikesCount).reversed());
+        if (count > films.size()) {
+            count = films.size();
         }
 
-        if (!StringUtils.hasText(film.getName())) {
-            throw new ValidationException("Название фильма не может быть пустым");
-        } else if (film.getDescription() != null && film.getDescription().length() > 200) {
-            throw new ValidationException("Максимальная длина описания - 200 символов");
-        } else if (film.getReleaseDate().compareTo(LocalDate.of(1895, 12, 28)) < 0) {
-            throw new ValidationException("Дата релиза не может быть раньше 28.12.1895");
-        } else if (film.getDuration() != null && film.getDuration() < 0) {
-            throw new ValidationException("Продолжительность фильма не может быть отрицательной");
-        }
+        return new ArrayList<>(films.subList(0, count));
     }
 }
