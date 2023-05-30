@@ -118,9 +118,9 @@ public class UserService extends AbstractService<User, UserStorage> {
         return friends;
     }
 
-    public List<User> getCommonFriends(Long id1, long id2) {
-        User user1 = this.findById(id1);
-        User user2 = this.findById(id2);
+    public List<User> getCommonFriends(Long userId, long friendId) {
+        User user1 = this.findById(userId);
+        User user2 = this.findById(friendId);
         if (user1 == null || user2 == null) {
             String message = ("Пользователь не найден");
             log.warn(message);
@@ -131,8 +131,8 @@ public class UserService extends AbstractService<User, UserStorage> {
         friendsId1.retainAll(friendsId2);
 
         List<User> friends = new ArrayList<>();
-        for (var friendId : friendsId1) {
-            friends.add(this.findById(friendId));
+        for (Long id : friendsId1) {
+            friends.add(this.findById(id));
         }
 
         return friends;

@@ -17,13 +17,13 @@ public class UserController extends AbstractController<User, UserService> {
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    public void addFriend(@PathVariable("id") Long id1, @PathVariable("friendId") Long id2) {
-        service.addFriend(id1, id2);
+    public void addFriend(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
+        service.addFriend(userId, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
-    public void removeFriend(@PathVariable("id") Long id1, @PathVariable("friendId") Long id2) {
-        service.removeFriend(id1, id2);
+    public void removeFriend(@PathVariable("id") Long userId, @PathVariable("friendId") Long friendId) {
+        service.removeFriend(userId, friendId);
     }
 
     @GetMapping("/{id}/friends")
@@ -32,7 +32,7 @@ public class UserController extends AbstractController<User, UserService> {
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
-    public List<User> getCommonFriends(@PathVariable("id") Long id1, @PathVariable("otherId") long id2) {
-        return service.getCommonFriends(id1, id2);
+    public List<User> getCommonFriends(@PathVariable("id") Long userId, @PathVariable("otherId") Long friendId) {
+        return service.getCommonFriends(userId, friendId);
     }
 }

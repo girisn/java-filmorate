@@ -65,6 +65,22 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> findPopular(int count) {
+        String sql = "SELECT f.FILM_ID, f.NAME, f.DESCRIPTION, f.RELEASE_DATE, f.DURATION, " +
+                "f.RATING_ID, r.NAME R_NAME, fl.COUNT FROM " +
+                "(SELECT FILM_ID, COUNT(USER_ID) AS COUNT " +
+                "FROM FILMS_LIKES fl " +
+                "GROUP BY FILM_ID " +
+                "ORDER BY COUNT(USER_ID) " +
+                "LIMIT %s) fl " +
+                "RIGHT JOIN FILMS f ON f.FILM_ID = fl.FILM_ID " +
+                "JOIN RATINGS r ON f.RATING_ID = r.RATING_ID " +
+                "ORDER BY fl.COUNT DESC, FILM_ID LIMIT %s ";
+        String sqlString = String.format(sql, count, count);
+        return jdbcTemplate.query(sqlString, this::mapToFilm);
+    }
+
+    @Override
     public Film create(Film film) {
         SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("FILMS")

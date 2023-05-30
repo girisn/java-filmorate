@@ -30,12 +30,14 @@ public abstract class AbstractService<E extends AbstractEntity, T extends Common
     @Override
     public E create(E data) {
         validationBeforeCreate(data);
+        log.debug("Создание сущности: {}", data);
         return storage.create(data);
     }
 
     @Override
     public E update(E data) {
         validationBeforeUpdate(data);
+        log.debug("Обновление сущности: {}", data);
         return storage.update(data);
     }
 

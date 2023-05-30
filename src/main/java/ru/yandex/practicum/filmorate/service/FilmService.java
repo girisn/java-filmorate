@@ -125,12 +125,8 @@ public class FilmService extends AbstractService<Film, FilmStorage> {
     }
 
     public List<Film> findPopularMovies(int count) {
-        List<Film> films = this.findAll();
-        films.sort(Comparator.comparing(Film::getLikesCount).reversed());
-        if (count > films.size()) {
-            count = films.size();
-        }
-
-        return new ArrayList<>(films.subList(0, count));
+        List<Film> films = this.storage.findPopular(count);
+        films.forEach(this::loadData);
+        return films;
     }
 }
