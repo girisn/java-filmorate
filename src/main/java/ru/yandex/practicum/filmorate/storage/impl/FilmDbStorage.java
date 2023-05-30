@@ -15,10 +15,7 @@ import ru.yandex.practicum.filmorate.storage.FilmStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Component
 @Primary
@@ -54,6 +51,28 @@ public class FilmDbStorage implements FilmStorage {
         film.setDuration(resultSet.getInt("DURATION"));
         film.setMpa(new Rating(resultSet.getLong("RATING_ID"), resultSet.getString("R_NAME")));
         return film;
+    }
+
+    public Map<Long, Set<Genre>> findGenresByIds(String ids) {
+        String sql = "SELECT fg.FILM_ID, fg.GENRE_ID, g.NAME " +
+                "FROM FILMS_GENRES fg " +
+                "LEFT JOIN GENRES g ON g.GENRE_ID = fg.GENRE_ID " +
+                "WHERE fg.FILM_ID IN (%s)";
+        String sqlString = String.format(sql, ids);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlString);
+        Map<Long, Set<Genre>> map = new HashMap<>();
+        while (rowSet.next()) {
+            Long filmId = rowSet.getLong("film_id");
+            Long genreId = rowSet.getLong("genre_id");
+            String genreName = rowSet.getString("name");
+            if (map.containsKey(filmId)) {
+                map.get(filmId).add(new Genre(genreId, genreName));
+            } else {
+                map.put(filmId, new HashSet<>());
+                map.get(filmId).add(new Genre(genreId, genreName));
+            }
+        }
+        return map;
     }
 
     @Override
@@ -129,6 +148,24 @@ public class FilmDbStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public Map<Long, Set<Long>> findLikesByIds(String ids) {
+        String sql = "SELECT USER_ID, FILM_ID FROM FILMS_LIKES WHERE FILM_ID IN (%s)";
+        String sqlString = String.format(sql, ids);
+        SqlRowSet rowSet = jdbcTemplate.queryForRowSet(sqlString);
+        Map<Long, Set<Long>> map = new HashMap<>();
+        while (rowSet.next()) {
+            Long userId = rowSet.getLong("user_id");
+            Long filmId = rowSet.getLong("film_id");
+            if (map.containsKey(filmId)) {
+                map.get(filmId).add(userId);
+            } else {
+                map.put(filmId, new HashSet<>());
+                map.get(filmId).add(userId);
+            }
+        }
+        return map;
+    }
 
     @Override
     public void createGenresByFilm(Film film) {

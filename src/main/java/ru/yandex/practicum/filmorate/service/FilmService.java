@@ -1,20 +1,18 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.InvalidFilmException;
 import ru.yandex.practicum.filmorate.exception.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Rating;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.GenreStorage;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -52,7 +50,8 @@ public class FilmService extends AbstractService<Film, FilmStorage> {
     @Override
     public List<Film> findAll() {
         List<Film> films = super.findAll();
-        films.forEach(this::loadData);
+        this.loadDataForlist(films);
+//        films.forEach(this::loadData);
         return films;
     }
 
@@ -66,6 +65,21 @@ public class FilmService extends AbstractService<Film, FilmStorage> {
     private void loadData(Film film) {
         film.setGenres(genreStorage.getGenresByFilm(film));
         storage.loadLikes(film);
+    }
+
+    private void loadDataForlist(List<Film> films) {
+        List<String> ids = films.stream().map(film -> film.getId().toString()).collect(Collectors.toList());
+        String idsString = StringUtils.join(ids, ',');
+        Map<Long, Set<Genre>> mapGenres = storage.findGenresByIds(idsString);
+        Map<Long, Set<Long>> mapLikes = storage.findLikesByIds(idsString);
+        for (Film film : films) {
+            film.setGenres(mapGenres.getOrDefault(film.getId(), Collections.emptySet()));
+            if (mapLikes.containsKey(film.getId())) {
+                for (Long like : mapLikes.get(film.getId())) {
+                    film.addLike(like);
+                }
+            }
+        }
     }
 
     @Override
@@ -126,7 +140,8 @@ public class FilmService extends AbstractService<Film, FilmStorage> {
 
     public List<Film> findPopularMovies(int count) {
         List<Film> films = this.storage.findPopular(count);
-        films.forEach(this::loadData);
+        this.loadDataForlist(films);
+//        films.forEach(this::loadData);
         return films;
     }
 }
