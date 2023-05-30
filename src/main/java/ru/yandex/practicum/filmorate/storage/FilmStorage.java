@@ -20,5 +20,6 @@ public interface FilmStorage extends CommonStorage<Film> {
     List<Film> findPopular(int count);
 
     Map<Long, Set<Genre>> findGenresByIds(String ids);
+
     Map<Long, Set<Long>> findLikesByIds(String ids);
 }
