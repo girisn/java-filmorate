@@ -1,28 +1,25 @@
 package ru.yandex.practicum.filmorate.storage;
 
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
-public interface FilmStorage {
-    Film add(Film film) throws ValidationException;
+public interface FilmStorage extends CommonStorage<Film> {
 
-    Film update(Film film) throws ValidationException;
+    void createGenresByFilm(Film film);
 
-    List<Film> list();
+    void updateGenresByFilm(Film film);
 
-    boolean isExist(Integer id);
+    void loadLikes(Film film);
 
-    boolean contains(Film film);
+    void saveLikes(Film film);
 
-    boolean hasLike(Integer filmId, Integer userId);
+    List<Film> findPopular(int count);
 
-    void addLike(Integer filmId, Integer userId);
+    Map<Long, Set<Genre>> findGenresByIds(String ids);
 
-    void deleteLike(Integer filmId, Integer userId);
-
-    List<Film> getPopularFilms(Integer count);
-
-    Film get(Integer filmId);
+    Map<Long, Set<Long>> findLikesByIds(String ids);
 }

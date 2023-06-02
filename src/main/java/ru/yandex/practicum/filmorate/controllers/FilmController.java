@@ -2,53 +2,32 @@ package ru.yandex.practicum.filmorate.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.List;
 
 @RestController
-public class FilmController {
+@RequestMapping("/films")
+public class FilmController extends AbstractController<Film, FilmService> {
+
     @Autowired
-    private FilmService filmService;
-
-    @GetMapping("/films")
-    public List<Film> getList() {
-        return filmService.list();
+    public FilmController(FilmService service) {
+        super(service);
     }
 
-    @PostMapping("/films")
-    public Film create(@RequestBody Film film) throws ValidationException {
-        return filmService.add(film);
+    @PutMapping("/{id}/like/{userId}")
+    public void addLike(@PathVariable Long id, @PathVariable Long userId) {
+        service.addLike(id, userId);
     }
 
-    @PutMapping("/films")
-    public Film update(@RequestBody Film film) throws ValidationException, ObjectNotFoundException {
-        return filmService.update(film);
+    @DeleteMapping("/{id}/like/{userId}")
+    public void removeLike(@PathVariable Long id, @PathVariable Long userId) {
+        service.removeLike(id, userId);
     }
 
-    @GetMapping("/films/{id}")
-    public Film getById(@PathVariable("id") Integer filmId) throws ObjectNotFoundException {
-        return filmService.getById(filmId);
-    }
-
-    @PutMapping("/films/{id}/like/{userId}")
-    public void addLike(@PathVariable("id") Integer filmId,
-                        @PathVariable("userId") Integer userId) throws ValidationException, ObjectNotFoundException {
-        filmService.addLike(filmId, userId);
-    }
-
-    @DeleteMapping("/films/{id}/like/{userId}")
-    public void deleteLike(@PathVariable("id") Integer filmId,
-                           @PathVariable("userId") Integer userId) throws ValidationException, ObjectNotFoundException {
-        filmService.deleteLike(filmId, userId);
-    }
-
-    @GetMapping("/films/popular")
-    public List<Film> getPopularFilms(
-            @RequestParam(value = "count", required = false, defaultValue = "10") Integer count) {
-        return filmService.getPopular(count);
+    @GetMapping("/popular")
+    public List<Film> findPopularMovies(@RequestParam(defaultValue = "10") int count) {
+        return service.findPopularMovies(count);
     }
 }
